@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/navasi.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard_graficos.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/826/826923.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Gráfico de caudal</title>   
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-6 chart-container" style="color: rgb(0, 0, 0); font-weight: bold;">
+                <h2>Comunidad: {{ veriente_comunidad  }}</h2>
+                <h2>Vertiente: {{ veriente_nombre }}</h2>
+                <h3>Ubicación: {{ veriente_ubicacion }}</h3>
+            </div>
+            <div class="col-md-6 chart-container"> <!-- Agregar la clase chart-container y el margen izquierdo -->
+                <canvas id="lineChart" width="400" height="400" style="background-color: white;"></canvas>
+            </div>
+            <div class="container">
+
+                <form method="get"style="margin-left: 150px; margin-top:15px;">
+                    <label for="dateRange">Selecciona un rango de fechas:</label>
+                    <select id="dateRange" name="date_range">
+                        <option value="all">Todos los datos</option>
+                        <option value="today">Hoy</option>
+                        <option value="yesterday">Ayer</option>
+                        <option value="thisWeek">Esta semana</option>
+                        <option value="thisMonth">Este mes</option>
+                        <option value="thisYear">Este año</option>
+                    </select>
+                    
+                </form>
+                
+            </div>
+        </div>
+    </div>
+
+    <div id="data-container" data-datajson="{{ data_json }}"></div>
+
+
+    <script>
+        // Obtener el elemento con los datos JSON
+        var dataContainer = document.getElementById('data-container');
+        
+        // Obtener el atributo data-datajson y convertirlo en un objeto JavaScript
+        var dataFromDjango = JSON.parse(dataContainer.getAttribute('data-datajson'));
+
+        // Obtener etiquetas y valores de los datos
+        var labels = dataFromDjango.labels;
+        var values = dataFromDjango.values;
+
+        // Crear un contexto para el gráfico
+        var ctx = document.getElementById('lineChart').getContext('2d');
+
+        // Configurar los datos para el gráfico de línea
+        var chartData = {
+            labels: labels,
+            datasets: [{
+                label: 'Caudal',
+                data: values,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 3,
+                fill: false
+            }]
+        };
+
+        // Configurar opciones del gráfico
+        var chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: [{
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        tooltipFormat: 'DD/MM/YYYY',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Fecha'
+                    },
+                    gridLines: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        lineWidth: 4
+                    }
+                }],
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Caudal (L/m)'
+                    },
+                    ticks: {
+                        // Añadir unidades de medida a los ticks del eje Y
+                        callback: function(value, index, values) {
+                            return value + ' ';
+                        },
+                        // Establecer el valor máximo del eje Y
+                        max: 30
+                    },
+                    gridLines: {
+                        color: 'rgba(0, 0, 0, 0.1)',
+                        lineWidth: 4
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        // Personalizar el tooltip para añadir las unidades de medida
+                        label: function(context) {
+                            var label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y + ' L/m';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        var currentRange = document.getElementById('dateRange').value;
+
+        document.getElementById('dateRange').addEventListener('change', function() {
+                currentRange = this.value;
+                this.form.submit(); // Tu código aquí
+            });
+
+
+        // Crear el gráfico de línea
+        var lineChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: chartOptions
+        });
+
+        var eventSource;
+
+        function startSSE() {
+            if (eventSource) {
+                eventSource.close();
+            }
+            
+            var objectId = {{ id_vertiente }};
+            const tipoGrafico = 'caudal';
+            const currentRange = document.getElementById('dateRange').value;
+            const eventSourceUrl = "/monitoreo/sse_grafico/" + objectId + "/" + tipoGrafico + "/" + currentRange + "/";
+
+            eventSource = new EventSource(eventSourceUrl);
+            
+            eventSource.onmessage = function(event) {
+                console.log(event.data);
+                var newData = JSON.parse(event.data);
+
+                // Actualizar los datos del gráfico
+                lineChart.data.labels = newData.labels;
+                lineChart.data.datasets[0].data = newData.values;
+                lineChart.update();  // Refrescar el gráfico con los nuevos datos
+            };
+        }
+
+        document.getElementById('dateRange').addEventListener('change', startSSE);
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var dateRangeParam = urlParams.get('date_range') || 'all'; // 'all' es el valor por defecto
+        document.getElementById('dateRange').value = dateRangeParam;
+
+
+        startSSE();
+
+    </script>
+
+</body>
+</html>

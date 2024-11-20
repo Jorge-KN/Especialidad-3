@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>Inicio Administrador</title>
+        <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/nabvar.css' %}">
+        <link rel="stylesheet" href="{% static 'css/interior.css' %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="ruta/a/font-awesome.min.css">
+        <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/826/826923.png" type="image/png">
+
+    </head>
+    <body>
+        {% include "barra_lateral_admin.html" %}
+    
+        <nav class="navbar">
+            <img src="https://cdn-ua.hostingreactor.com/ua_www/cache/wp-content/uploads/2020/12/Logo_svg.svg" alt="Logo" class="logo">
+            <div class="navbar-left">
+                <span class="hidro-tech">HidroTech</span>
+            </div>
+            <div class="navbar-center">
+                <div class="admin-box">Vista Administrador</div>
+            </div>
+            <a href="{% url 'nucleo:logout' %}" class="cerrar-sesion">Cerrar Sesión</a>
+        </nav>
+        
+        <div class="vertientes-container">
+            <div class="vertientes-header">
+                <h1>
+                    Seleccione qué desea visualizar
+                    <i class="fas fa-lightbulb incognito-icon" onmouseover="showText('text3')" onmouseout="hideText('text3')"></i>
+                </h1>
+            </div>
+            
+            <div id="text3" class="hidden-text2">
+                <h4>Aquí puedes elegir qué apartado de la administración visualizar: gestión de usuarios/comunidades/vertientes/kits. ó todas las vertientes</h4>
+            </div>
+            <div class="rectangulo2 rectangulo2-celeste">
+                <div class="contenido-rectangulo2">
+                    <h2 class="gestion-text"><font color="white">Gestión administrativa de vertientes</font></h2>
+                        <i class="fas fa-question-circle incognito-icon" onmouseover="showText('text1')" onmouseout="hideText('text1')"></i>
+                </div>
+                <div id="text1" class="hidden-text">
+                    <h3>¿Para que sirve esto?</h3>
+                    <h4>En esta opción aparecen las peticiones de registro de usuarios, modificar correos de contacto, comunidades, vertientes, etc.</h4>
+                </div>
+                <a href="{% url 'crud:index' %}">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+            </div>
+            <div class="rectangulo2 rectangulo2-celeste">
+                <div class="contenido-rectangulo2">
+                    <h2 class="gestion-text"><font color="white">Visualización de vertientes monitorizadas</font></h2>
+                        <i class="fas fa-question-circle incognito-icon" onmouseover="showText('text2')" onmouseout="hideText('text2')"></i>
+                </div>
+                <div id="text2" class="hidden-text">
+                    <h3>¿Para que sirve esto?</h3>
+                    <h4>En esta opción sirve para ver todas las vertientes de todas las comunidades monitorizadas.</h4>
+                </div>
+                <a href="{% url 'eva:comuni' %}">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                </a>
+            </div>
+            <img src="https://cdn.discordapp.com/attachments/732373939912704072/1162149375108206693/image.png?ex=653ae2f2&is=65286df2&hm=0f0bbe2d12c66509b0bcaa273a5d55933ba01bc33e3c49a68487ef5bf55cd7c9&" alt="Tu imagen">
+        </div>
+        <script>
+            function showText(textId) {
+                var textElement = document.getElementById(textId);
+                textElement.style.display = 'block';
+            }
+    
+            function hideText(textId) {
+                var textElement = document.getElementById(textId);
+                textElement.style.display = 'none';
+            }
+        </script>
+    </body>
+    </html>

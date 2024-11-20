@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+              rel="stylesheet">
+              <link rel="stylesheet" href="{% static 'css/visualizacion.css' %}">
+              <link rel="stylesheet" href="{% static 'css/nabvar.css' %}">
+
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="icon"
+              href="https://cdn-icons-png.flaticon.com/512/826/826923.png"
+              type="image/png">
+        <title>Estado de Vertiente</title>
+    </head>
+
+    <body>
+        <!-- Dashboard de datos-->
+        <div class="dash-container">
+
+            <!-- Header de Bienvenida-->
+            <div class="dash-header" style="background-image: url('{% static "img/imagen_heade_datos.png" %}'); border-radius: 30px; padding: 20px;">
+                <div class="title-section1" style="color: white; text-align: left;">
+                    <h1 class="card-titles" style="font-weight: bold;">
+                        Bienvenido al monitorio remoto de vertientes
+                    </h1>
+                    <h2>Comunidad: {{ comunidad.nombre }}</h2>
+                    <h2>Vertiente: {{ vertiente.nombre }}</h2>
+                    <h3>Ubicación: {{ vertiente.ubicación }}</h3>
+                </div>
+                <div class="info-icono">
+                    <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('text1')" onmouseout="hideText('text1')"></i>
+                    <div id="text1" class="hidden-texto" style="color: white; text-align: left;">
+                        <p>Aquí puedes ver en detalle todas las mediciones a la vertiente que has escogido</p>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="dashboard-section">
+                <!-- Botón Caudal -->
+                <div class="dashboard1-card btn-primary">
+                    <i class="fas fa-tint"></i>
+                    <h3>Caudal <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('textCaudal')" onmouseout="hideText('textCaudal')"></i></h3>
+                    <div id="textCaudal" class="hidden-texto " style="color: white; text-align: left;">
+                        <p><strong>Caudal:</strong> Es la cantidad de agua que fluye por una sección del río en un tiempo determinado.</p>
+                    </div>
+                    <!-- Aquí se añade el id "caudal-value" para poder ser actualizado con JavaScript -->
+                    <p id="caudal-value">{{ ultimo_dato.caudal }} <span class="unidad">L/m</span></p>
+                    <a href="{% url 'habi:grafico_generico' 'caudal' vertiente.id  %}" class="dashboard-link">Ver Gráfico</a>
+                </div>
+        
+                <!-- Botón pH -->
+                <div class="dashboard1-card btn-primary">
+                    <i class="fas fa-flask"></i>
+                    <h3>pH <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('textPh')" onmouseout="hideText('textPh')"></i></h3>
+                    <div id="textPh" class="hidden-texto" style="color: white; text-align: left;">
+                        <p><strong>pH:</strong> Es una medida de acidez o alcalinidad de una solución.</p>
+                    </div>
+                    <p id="ph-value">{{ ultimo_dato.pH }} <span class="unidad">ph</span></p>
+                    <a href="{% url 'habi:grafico_generico' 'ph' vertiente.id %}" class="dashboard-link">Ver Gráfico</a>
+                </div>
+        
+                <!-- Botón Temperatura -->
+                <div class="dashboard1-card btn-primary">
+                    <i class="fas fa-thermometer-half"></i>
+                    <h3>Temperatura <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('textTemp')" onmouseout="hideText('textTemp')"></i></h3>
+                    <div id="textTemp" class="hidden-texto" style="color: white; text-align: left;">
+                        <p><strong>Temperatura:</strong> Es una medida del calor o frío de un objeto o ambiente.</p>
+                    </div>
+                    <p id="temperatura-value">{{ ultimo_dato.temperatura }} <span class="unidad">°C</span></p>
+                    <a href="{% url 'habi:grafico_generico' 'temperatura' vertiente.id %}" class="dashboard-link">Ver Gráfico</a>
+
+                </div>
+        
+                <!-- Botón Conductividad -->
+                <div class="dashboard1-card btn-warning">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Conductividad <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('textCond')" onmouseout="hideText('textCond')"></i></h3>
+                    <div id="textCond" class="hidden-texto" style="color: white; text-align: left;">
+                        <p><strong>Conductividad:</strong> Es una medida de la capacidad de una solución para conducir electricidad.</p>
+                    </div>
+                    <p id="conductividad-value">{{ ultimo_dato.conductividad }} <span class="unidad">µS/cm</span></p>
+                    <a href="{% url 'habi:grafico_generico' 'conductividad' vertiente.id %}" class="dashboard-link">Ver Gráfico</a>
+
+                </div>
+        
+                <!-- Botón Turbiedad -->
+                <div class="dashboard1-card btn-info">
+                    <i class="fas fa-tint-slash"></i>
+                    <h3>Turbiedad <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('textTurb')" onmouseout="hideText('textTurb')"></i></h3>
+                    <div id="textTurb" class="hidden-texto" style="color: white; text-align: left;">
+                        <p><strong>Turbiedad:</strong> Es una medida de la claridad del agua. Se refiere a la cantidad de partículas suspendidas en el agua.</p>
+                    </div>
+                    <p id="turbiedad-value">{{ ultimo_dato.turbiedad }} <span class="unidad">NTU</span></p>
+                    <a href="{% url 'habi:grafico_generico' 'turbiedad' vertiente.id %}" class="dashboard-link">Ver Gráfico</a>
+
+                </div>
+        
+                <!-- Botón Humedad -->
+                <div class="dashboard1-card btn-secondary">
+                    <i class="fas fa-tint-slash"></i>
+                    <h3>Humedad <i class="fas fa-lightbulb incognito-icono" style="color: yellow;" onmouseover="showText('textHum')" onmouseout="hideText('textHum')"></i></h3>
+                    <div id="textHum" class="hidden-texto" style="color: white; text-align: left;">
+                        <p><strong>Humedad:</strong> Es la cantidad de vapor de agua presente en el aire o en una sustancia.</p>
+                    </div>
+                    <p id="humedad-value">{{ ultimo_dato.humedad }} <span class="unidad">%</span></p>
+                    <a href="{% url 'habi:grafico_generico' 'humedad' vertiente.id %}" class="dashboard-link">Ver Gráfico</a>
+
+                </div>
+            </div>
+        </div>
+        <!-- FIN Dashboard de datos-->
+
+
+    </body>
+
+    <script>
+        function showText(textId) {
+            var textElement = document.getElementById(textId);
+            textElement.style.display = 'block';
+        }
+
+        function hideText(textId) {
+            var textElement = document.getElementById(textId);
+            textElement.style.display = 'none';
+        }
+                // Establece una conexión con el endpoint SSE
+                var objectId = {{ objecto_id }};
+                const eventSourceUrl = "/monitoreo/sse_datos/" + objectId + "/";
+                const eventSource = new EventSource(eventSourceUrl);
+            
+                // Escucha el evento "new-data" que enviamos desde Django
+                eventSource.addEventListener('new-data', function(event) {
+                    // Parsea los datos enviados desde Django
+                    const data = JSON.parse(event.data);
+            
+                    // Actualiza los elementos en la página con los nuevos datos
+                    document.querySelector('#caudal-value').textContent = data.caudal + ' L/m';
+                    document.querySelector('#ph-value').textContent = data.pH + ' ph';
+                    document.querySelector('#temperatura-value').textContent = data.temperatura + ' °C';
+                    document.querySelector('#conductividad-value').textContent = data.conductividad + ' µS/cm';
+                    document.querySelector('#turbiedad-value').textContent = data.turbiedad + ' NTU';
+                    document.querySelector('#humedad-value').textContent = data.humedad + ' %';
+                });
+    </script>
+
+</html>
