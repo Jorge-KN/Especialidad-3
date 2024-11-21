@@ -26,11 +26,7 @@ SECRET_KEY = 'django-insecure-lxw&6j4r!nw6^et0g44xn#&anc3l&v@_f*n*#&&_rj5mxnhqx)
 # ADVERTENCIA DE SEGURIDAD: no ejecutes con debug activado en producción!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'vertientes-web-ayd6dyemhrduhnak.brazilsouth-01.azurewebsites.net',
-    'localhost',  # Opcional para pruebas locales
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 # Definición de la aplicación
 
