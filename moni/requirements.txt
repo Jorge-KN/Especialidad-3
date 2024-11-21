@@ -36,3 +36,4 @@ xlwt
 xlrd
 djangorestframework
 djangorestframework-simplejwt
+dj-database-url
